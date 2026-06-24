@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaam Circle — Where Evenings Turn Into Experiences</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root{
+    --midnight:#0a0916;
+    --midnight-2:#120f24;
+    --dusk:#2c1142;
+    --dusk-2:#3a1640;
+    --violet:#8b3ef0;
+    --violet-soft:#a874f2;
+    --pink:#ff3fa4;
+    --cyan:#33e7d6;
+    --sand:#f3e9dc;
+    --muted:#b6a6d9;
+    --muted-2:#7d6f9c;
+    --line:rgba(255,255,255,0.08);
+    --glass:rgba(255,255,255,0.04);
+    --glass-strong:rgba(255,255,255,0.07);
+    --ease:cubic-bezier(.16,.84,.44,1);
+    --container:1240px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--midnight);
+    color:var(--sand);
+    font-family:'Inter',sans-serif;
+    font-weight:400;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:0.001ms !important;}
+  }
+  h1,h2,h3,h4{
+    font-family:'Syne',sans-serif;
+    margin:0;
+    letter-spacing:-0.01em;
+    color:var(--sand);
+  }
+  p{margin:0; color:var(--muted); line-height:1.7;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none; margin:0; padding:0;}
+  img,svg{display:block; max-width:100%;}
+  .container{max-width:var(--container); margin:0 auto; padding:0 32px;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:7px;height:7px;border-radius:50%;
+    background:var(--cyan);
+    box-shadow:0 0 10px var(--cyan), 0 0 20px var(--cyan);
+  }
+  .eyebrow.pink{color:var(--pink);}
+  .eyebrow.pink::before{background:var(--pink); box-shadow:0 0 10px var(--pink),0 0 20px var(--pink);}
+  .eyebrow.violet{color:var(--violet-soft);}
+  .eyebrow.violet::before{background:var(--violet-soft); box-shadow:0 0 10px var(--violet),0 0 20px var(--violet);}
+
+  /* ============ GRAIN OVERLAY ============ */
+  .grain{
+    position:fixed; inset:0; z-index:999; pointer-events:none;
+    opacity:0.05; mix-blend-mode:overlay;
+  }
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:16px 30px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+    border:1px solid var(--line);
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease), border-color .35s var(--ease);
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background:linear-gradient(120deg,var(--violet),var(--pink));
+    color:#fff;
+    border:none;
+    box-shadow:0 0 0 0 rgba(255,63,164,0);
+  }
+  .btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 30px -6px rgba(255,63,164,0.55), 0 0 40px -10px rgba(139,62,240,0.6);
+  }
+  .btn-ghost{
+    background:rgba(255,255,255,0.03);
+    color:var(--sand);
+    backdrop-filter:blur(8px);
+  }
+  .btn-ghost:hover{
+    border-color:var(--cyan);
+    color:var(--cyan);
+    box-shadow:0 0 24px -6px rgba(51,231,214,0.5);
+    transform:translateY(-2px);
+  }
+  .btn-ghost svg{stroke:currentColor;}
+
+  /* ============ HEADER ============ */
+  .site-header{
+    position:fixed; top:0; left:0; right:0; z-index:200;
+    padding:20px 0;
+    transition:background .4s var(--ease), padding .4s var(--ease), border-color .4s var(--ease);
+    border-bottom:1px solid transparent;
+  }
+  .site-header.scrolled{
+    background:rgba(10,9,22,0.72);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{display:flex; align-items:center; justify-content:space-between;}
+  .logo{display:flex; align-items:center; gap:12px;}
+  .logo-mark{width:34px; height:34px; flex:0 0 auto;}
+  .logo-text{
+    font-family:'Syne',sans-serif;
+    font-weight:700;
+    font-size:17px;
+    letter-spacing:0.04em;
+    color:var(--sand);
+  }
+  .logo-text span{color:var(--pink);}
+  .nav-links{display:flex; gap:34px;}
+  .nav-links a{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:var(--muted);
+    position:relative;
+    padding-bottom:4px;
+    transition:color .3s var(--ease);
+  }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:0; width:0; height:1px;
+    background:linear-gradient(90deg,var(--cyan),var(--pink));
+    transition:width .35s var(--ease);
+  }
+  .nav-links a:hover{color:var(--sand);}
+  .nav-links a:hover::after{width:100%;}
+  .nav-right{display:flex; align-items:center; gap:18px;}
+  .nav-toggle{display:none; background:none; border:none; cursor:pointer; padding:6px;}
+  .nav-toggle span{display:block; width:22px; height:1.5px; background:var(--sand); margin:5px 0; transition:.3s;}
+  .mobile-panel{
+    display:none;
+    position:fixed; inset:0; top:0; z-index:190;
+    background:rgba(8,7,18,0.97);
+    backdrop-filter:blur(10px);
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:28px;
+    opacity:0; visibility:hidden;
+    transition:opacity .35s var(--ease);
+  }
+  .mobile-panel.open{opacity:1; visibility:visible;}
+  .mobile-panel a{
+    font-family:'Syne',sans-serif; font-size:26px; font-weight:700; color:var(--sand);
+  }
+  .mobile-panel .close-x{position:absolute; top:26px; right:32px; font-size:28px; color:var(--muted); cursor:pointer; font-family:'JetBrains Mono',monospace;}
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 70% 50% at 50% 18%, rgba(255,63,164,0.18), transparent 60%),
+      radial-gradient(ellipse 60% 45% at 80% 80%, rgba(51,231,214,0.10), transparent 60%),
+      linear-gradient(180deg, var(--midnight) 0%, var(--dusk) 55%, var(--midnight) 100%);
+  }
+  .hero-blob{
+    position:absolute; border-radius:50%; filter:blur(70px); opacity:0.55;
+    animation:drift 22s ease-in-out infinite;
+  }
+  .hero-blob.b1{width:520px; height:520px; background:radial-gradient(circle,var(--violet),transparent 70%); top:-160px; left:-120px;}
+  .hero-blob.b2{width:460px; height:460px; background:radial-gradient(circle,var(--pink),transparent 70%); bottom:-180px; right:-100px; animation-delay:-8s;}
+  .hero-blob.b3{width:360px; height:360px; background:radial-gradient(circle,var(--cyan),transparent 70%); top:30%; right:8%; opacity:0.25; animation-delay:-14s;}
+  @keyframes drift{
+    0%,100%{transform:translate(0,0) scale(1);}
+    50%{transform:translate(30px,-30px) scale(1.08);}
+  }
+  .hero-content{position:relative; z-index:3; max-width:880px; margin:0 auto; text-align:center; padding:160px 32px 60px;}
+  .hero-orb-wrap{display:flex; justify-content:center; margin-bottom:28px;}
+  .hero-orb{width:64px; height:64px; animation:spin 16s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .hero-title{
+    font-size:clamp(40px,7vw,84px);
+    font-weight:800;
+    line-height:1.04;
+    margin:18px 0 22px;
+    background:linear-gradient(120deg,#fff 10%, var(--sand) 40%, var(--violet-soft) 75%, var(--pink) 100%);
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .hero-sub{
+    font-size:17px; max-width:560px; margin:0 auto 40px; color:var(--muted);
+  }
+  .hero-actions{display:flex; gap:16px; justify-content:center; flex-wrap:wrap;}
+  .scroll-cue{
+    position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.2em; color:var(--muted-2);
+    z-index:3;
+  }
+  .scroll-cue .line{width:1px; height:34px; background:linear-gradient(180deg,var(--cyan),transparent); animation:cuepulse 2s ease-in-out infinite;}
+  @keyframes cuepulse{0%,100%{opacity:.3;} 50%{opacity:1;}}
+
+  /* ============ REVEAL ============ */
+  [data-reveal]{opacity:0; transform:translateY(28px); transition:opacity .9s var(--ease), transform .9s var(--ease);}
+  [data-reveal].in-view{opacity:1; transform:translateY(0);}
+  [data-reveal="fade"]{transform:none;}
+
+  /* ============ SECTION HEAD ============ */
+  .section{padding:130px 0; position:relative;}
+  .section-head{max-width:640px; margin-bottom:64px;}
+  .section-head h2{font-size:clamp(30px,4vw,46px); margin-top:16px; line-height:1.1;}
+  .section-head p.tagline{margin-top:16px; font-size:16px; color:var(--muted);}
+
+  /* ============ CATEGORIES ============ */
+  .categories{background:var(--midnight);}
+  .category-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:24px;}
+  .category-card{
+    position:relative;
+    border-radius:20px;
+    padding:38px 30px 34px;
+    background:linear-gradient(160deg, var(--glass), rgba(255,255,255,0.015));
+    border:1px solid var(--line);
+    backdrop-filter:blur(14px);
+    overflow:hidden;
+    transition:transform .5s var(--ease), border-color .5s var(--ease);
+    min-height:280px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .category-card::before{
+    content:''; position:absolute; inset:-40%; opacity:0; transition:opacity .6s var(--ease);
+    background:radial-gradient(circle at 30% 20%, var(--glow), transparent 60%);
+    filter:blur(20px);
+  }
+  .category-card:hover{transform:translateY(-6px); border-color:rgba(255,255,255,0.18);}
+  .category-card:hover::before{opacity:0.5;}
+  .category-card.c1{--glow:var(--violet);}
+  .category-card.c2{--glow:var(--pink);}
+  .category-card.c3{--glow:var(--cyan);}
+  .category-card.c4{--glow:var(--violet-soft);}
+  .cat-index{font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted-2); letter-spacing:.1em;}
+  .cat-icon{width:38px; height:38px; margin-bottom:18px; position:relative; z-index:2;}
+  .category-card h3{font-size:23px; margin-bottom:12px; position:relative; z-index:2;}
+  .category-card p{font-size:14.5px; position:relative; z-index:2;}
+  .cat-tag{
+    margin-top:20px; display:inline-flex; align-items:center; gap:8px;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--sand); opacity:.75; position:relative; z-index:2;
+  }
+  .cat-tag svg{width:13px; height:13px; transition:transform .4s var(--ease);}
+  .category-card:hover .cat-tag svg{transform:translateX(4px);}
+
+  /* ============ SIGNATURE ============ */
+  .signature{
+    background:linear-gradient(180deg, var(--midnight) 0%, var(--dusk-2) 50%, var(--midnight) 100%);
+    position:relative;
+  }
+  .signature-inner{display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:start;}
+  .signature-text{display:flex; flex-direction:column; gap:90px; padding-top:10px;}
+  .signature-block{max-width:440px; opacity:.35; transition:opacity .6s var(--ease);}
+  .signature-block.active{opacity:1;}
+  .phase-tag{font-family:'JetBrains Mono',monospace; font-size:11.5px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:14px; display:block;}
+  .signature-block[data-phase="stillness"] .phase-tag{color:var(--cyan);}
+  .signature-block[data-phase="breath"] .phase-tag{color:#8fd9d2;}
+  .signature-block[data-phase="pulse"] .phase-tag{color:var(--violet-soft);}
+  .signature-block[data-phase="release"] .phase-tag{color:var(--pink);}
+  .signature-block h3{font-size:24px; margin-bottom:12px;}
+  .signature-block p{font-size:15px;}
+  .signature-visual{position:sticky; top:120px; height:520px; display:flex; align-items:center; justify-content:center;}
+  .orb-stage{position:relative; width:340px; height:340px; display:flex; align-items:center; justify-content:center;}
+  .orb-ring{position:absolute; border-radius:50%; border:1px solid var(--line);}
+  .orb-ring.r1{width:100%; height:100%;}
+  .orb-ring.r2{width:78%; height:78%;}
+  .orb-core{
+    width:42%; height:42%; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--orb-c1,var(--cyan)), var(--orb-c2,var(--violet)) 70%);
+    box-shadow:0 0 60px 10px var(--orb-c1,var(--cyan));
+    animation:breathe var(--orb-speed,6s) ease-in-out infinite;
+    transition:background 1s var(--ease), box-shadow 1s var(--ease);
+  }
+  @keyframes breathe{0%,100%{transform:scale(0.85);} 50%{transform:scale(1.06);}}
+  .signature-visual[data-phase="stillness"] .orb-core{--orb-c1:#7fd8d0; --orb-c2:#2a1742; --orb-speed:7s;}
+  .signature-visual[data-phase="breath"] .orb-core{--orb-c1:#33e7d6; --orb-c2:#5a3fae; --orb-speed:4.5s;}
+  .signature-visual[data-phase="pulse"] .orb-core{--orb-c1:#a874f2; --orb-c2:#ff3fa4; --orb-speed:2.4s;}
+  .signature-visual[data-phase="release"] .orb-core{--orb-c1:#ff3fa4; --orb-c2:#8b3ef0; --orb-speed:1.1s;}
+
+  /* ============ UPCOMING ============ */
+  .upcoming{background:var(--midnight-2);}
+  .upcoming-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:26px;}
+  .upcoming-card{
+    position:relative; border-radius:18px; overflow:hidden;
+    border:1px solid var(--line);
+    background:#0d0c1c;
+    min-height:300px;
+    display:flex; flex-direction:column; justify-content:flex-end;
+    transition:border-color .5s var(--ease), transform .5s var(--ease);
+  }
+  .upcoming-card:hover{transform:translateY(-5px);}
+  .uc-visual{
+    position:absolute; inset:0;
+    filter:blur(14px) saturate(1.2) brightness(0.7);
+    transform:scale(1.15);
+    transition:filter .6s var(--ease), transform .6s var(--ease);
+  }
+  .upcoming-card:hover .uc-visual{filter:blur(4px) saturate(1.3) brightness(0.85); transform:scale(1.05);}
+  .uc-visual.v1{background:radial-gradient(circle at 30% 30%, var(--violet), transparent 60%), radial-gradient(circle at 80% 80%, var(--pink), transparent 55%), #150c28;}
+  .uc-visual.v2{background:radial-gradient(circle at 70% 20%, var(--cyan), transparent 55%), radial-gradient(circle at 20% 80%, var(--violet), transparent 60%), #0d1622;}
+  .uc-visual.v3{background:radial-gradient(circle at 50% 50%, var(--violet-soft), transparent 65%), #0a0a18;}
+  .uc-visual.v4{background:radial-gradient(circle at 25% 70%, var(--pink), transparent 55%), radial-gradient(circle at 75% 25%, var(--cyan), transparent 55%), #100c1f;}
+  .uc-noise{position:absolute; inset:0; opacity:.18; mix-blend-mode:overlay;}
+  .uc-body{position:relative; z-index:2; padding:26px 24px 24px;}
+  .status-tag{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+    padding:6px 12px; border-radius:999px; margin-bottom:14px;
+    border:1px solid var(--line); backdrop-filter:blur(6px);
+  }
+  .status-tag.soon{color:var(--pink); border-color:rgba(255,63,164,0.4); box-shadow:0 0 16px -4px rgba(255,63,164,.6);}
+  .status-tag.dev{color:var(--cyan); border-color:rgba(51,231,214,0.4); box-shadow:0 0 16px -4px rgba(51,231,214,.6);}
+  .status-tag.locked{color:var(--muted); border-color:rgba(255,255,255,0.18);}
+  .status-tag svg{width:11px; height:11px;}
+  .upcoming-card h3{font-size:25px; margin-bottom:8px;}
+  .upcoming-card p.teaser{font-size:13.5px; color:var(--muted); max-width:300px;}
+  .uc-frame{position:absolute; inset:0; border-radius:18px; pointer-events:none; opacity:0; transition:opacity .5s var(--ease); z-index:3;}
+  .uc-frame{box-shadow:inset 0 0 0 1px var(--frame-c,var(--violet)), 0 0 40px -8px var(--frame-c,var(--violet));}
+  .upcoming-card:hover .uc-frame{opacity:.9;}
+  .upcoming-card.uc1{--frame-c:var(--violet);}
+  .upcoming-card.uc2{--frame-c:var(--cyan);}
+  .upcoming-card.uc3{--frame-c:var(--muted-2);}
+  .upcoming-card.uc4{--frame-c:var(--pink);}
+
+  /* ============ GALLERY ============ */
+  .gallery{background:var(--midnight);}
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    grid-auto-rows:160px;
+    gap:18px;
+  }
+  .gallery-item{
+    position:relative; border-radius:14px; overflow:hidden; border:1px solid var(--line);
+    transition:transform .5s var(--ease);
+  }
+  .gallery-item:hover{transform:scale(1.02);}
+  .gallery-item .gi-bg{position:absolute; inset:0; transition:transform .8s var(--ease), filter .8s var(--ease);}
+  .gallery-item:hover .gi-bg{transform:scale(1.12);}
+  .gallery-item .gi-caption{
+    position:absolute; left:16px; bottom:14px; z-index:2;
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.06em; color:var(--sand);
+    opacity:0; transform:translateY(8px); transition:.4s var(--ease);
+  }
+  .gallery-item:hover .gi-caption{opacity:1; transform:translateY(0);}
+  .gallery-item .gi-shade{position:absolute; inset:0; background:linear-gradient(180deg, transparent 50%, rgba(0,0,0,.7) 100%); z-index:1;}
+  .g1{grid-column:span 2; grid-row:span 2;}
+  .g2{grid-column:span 1; grid-row:span 1;}
+  .g3{grid-column:span 1; grid-row:span 2;}
+  .g4{grid-column:span 1; grid-row:span 1;}
+  .g5{grid-column:span 2; grid-row:span 1;}
+  .g6{grid-column:span 1; grid-row:span 1;}
+  .gb1{background:radial-gradient(circle at 30% 30%,var(--violet),transparent 60%),radial-gradient(circle at 80% 80%,var(--pink),transparent 55%),#160c2b;}
+  .gb2{background:radial-gradient(circle at 60% 40%,var(--cyan),transparent 55%),#0c1a22;}
+  .gb3{background:radial-gradient(circle at 50% 70%,var(--pink),transparent 60%),radial-gradient(circle at 30% 10%,var(--violet),transparent 55%),#190d23;}
+  .gb4{background:radial-gradient(circle at 40% 50%,var(--violet-soft),transparent 60%),#0d0d1e;}
+  .gb5{background:radial-gradient(circle at 70% 30%,var(--cyan),transparent 50%),radial-gradient(circle at 20% 80%,var(--violet),transparent 55%),#0e1320;}
+  .gb6{background:radial-gradient(circle at 50% 50%,var(--pink),transparent 60%),#150b1c;}
+
+  /* ============ ABOUT ============ */
+  .about{
+    background:linear-gradient(180deg, var(--midnight) 0%, var(--dusk) 100%);
+    text-align:center;
+  }
+  .about-inner{max-width:760px; margin:0 auto;}
+  .about-inner .eyebrow{justify-content:center;}
+  .about-inner h2{font-size:clamp(28px,4vw,42px); margin:18px 0 30px;}
+  .about-inner p{font-size:17px; margin-bottom:20px;}
+  .about-quote{
+    font-family:'Syne',sans-serif; font-weight:700; font-size:clamp(22px,3vw,30px);
+    color:var(--sand); line-height:1.35; margin:40px 0;
+    background:linear-gradient(120deg,var(--cyan),var(--violet-soft),var(--pink));
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  .about-stats{display:flex; justify-content:center; gap:60px; margin-top:50px; flex-wrap:wrap;}
+  .about-stat{text-align:center;}
+  .about-stat .num{font-family:'Syne',sans-serif; font-size:34px; font-weight:800; color:var(--sand);}
+  .about-stat .lbl{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-2); margin-top:6px;}
+
+  /* ============ CONTACT ============ */
+  .contact{background:var(--midnight-2); position:relative; overflow:hidden;}
+  .contact-inner{
+    display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px;
+    border-radius:26px; overflow:hidden;
+    border:1px solid var(--line);
+    background:linear-gradient(135deg, rgba(139,62,240,0.10), rgba(255,63,164,0.06));
+  }
+  .contact-left{padding:64px 56px;}
+  .contact-left h2{font-size:clamp(28px,4vw,40px); margin-bottom:18px;}
+  .contact-left p{font-size:15.5px; max-width:420px; margin-bottom:36px;}
+  .contact-list{display:flex; flex-direction:column; gap:22px;}
+  .contact-list li{display:flex; align-items:center; gap:16px;}
+  .contact-list .ic{
+    width:42px; height:42px; border-radius:50%; flex:0 0 auto;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,0.05); border:1px solid var(--line);
+  }
+  .contact-list .ic svg{width:18px; height:18px; stroke:var(--cyan);}
+  .contact-list a, .contact-list span.label{font-size:15px; color:var(--sand);}
+  .contact-list .sub{display:block; font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--muted-2); letter-spacing:.1em; text-transform:uppercase; margin-bottom:3px;}
+  .contact-right{
+    background:rgba(0,0,0,0.25);
+    padding:64px 48px;
+    display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:18px;
+    border-left:1px solid var(--line);
+  }
+  .contact-right .eyebrow{margin-bottom:6px;}
+  .contact-right h3{font-size:26px; line-height:1.25;}
+  .contact-right p{font-size:14px;}
+  .contact-right .btn-primary{width:100%; justify-content:center; padding:18px;}
+
+  /* ============ FOOTER ============ */
+  .site-footer{padding:60px 0 40px; border-top:1px solid var(--line); background:var(--midnight);}
+  .footer-top{display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:30px; margin-bottom:40px;}
+  .footer-links{display:flex; gap:40px; flex-wrap:wrap;}
+  .footer-col h4{font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted-2); margin-bottom:14px;}
+  .footer-col ul{display:flex; flex-direction:column; gap:10px;}
+  .footer-col a{font-size:14px; color:var(--muted); transition:color .3s;}
+  .footer-col a:hover{color:var(--cyan);}
+  .footer-bottom{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; padding-top:26px; border-top:1px solid var(--line);}
+  .footer-bottom p{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted-2); letter-spacing:.04em;}
+
+  /* ============ FLOATING BOOK BTN ============ */
+  .float-book{
+    position:fixed; bottom:26px; right:26px; z-index:150;
+    opacity:0; transform:translateY(16px) scale(.9); pointer-events:none;
+    transition:opacity .4s var(--ease), transform .4s var(--ease);
+  }
+  .float-book.show{opacity:1; transform:translateY(0) scale(1); pointer-events:auto;}
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width:980px){
+    .signature-inner{grid-template-columns:1fr;}
+    .signature-visual{position:relative; top:0; height:340px; margin-bottom:20px;}
+    .signature-text{gap:50px;}
+    .category-grid{grid-template-columns:1fr;}
+    .upcoming-grid{grid-template-columns:1fr;}
+    .gallery-grid{grid-template-columns:repeat(2,1fr); grid-auto-rows:140px;}
+    .g1{grid-column:span 2; grid-row:span 1;}
+    .contact-inner{grid-template-columns:1fr;}
+    .contact-right{border-left:none; border-top:1px solid var(--line);}
+  }
+  @media (max-width:760px){
+    .nav-links{display:none;}
+    .nav-toggle{display:block;}
+    .mobile-panel{display:flex;}
+    .section{padding:90px 0;}
+    .hero-content{padding:140px 24px 70px;}
+    .contact-left, .contact-right{padding:42px 28px;}
+    .footer-top{flex-direction:column;}
+    .about-stats{gap:34px;}
+  }
+  @media (max-width:480px){
+    .container{padding:0 20px;}
+    .gallery-grid{grid-template-columns:1fr 1fr; grid-auto-rows:120px;}
+  }
+</style>
+</head>
+<body>
+
+<svg class="grain" aria-hidden="true">
+  <filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+</svg>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="siteHeader">
+  <div class="container nav-row">
+    <a href="#" class="logo">
+      <svg class="logo-mark" viewBox="0 0 40 40">
+        <defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#33e7d6"/><stop offset="55%" stop-color="#8b3ef0"/><stop offset="100%" stop-color="#ff3fa4"/>
+        </linearGradient></defs>
+        <circle cx="20" cy="20" r="17" fill="none" stroke="url(#lg1)" stroke-width="2" stroke-dasharray="78 100" stroke-linecap="round" transform="rotate(-90 20 20)"/>
+        <circle cx="20" cy="20" r="6" fill="url(#lg1)" opacity="0.85"/>
+      </svg>
+      <span class="logo-text">SHAAM<span>CIRCLE</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#events">Events</a>
+      <a href="#signature">Signature</a>
+      <a href="#upcoming">Upcoming</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <a href="#contact" class="btn btn-primary" style="padding:11px 22px; font-size:11.5px;">Book Now</a>
+      <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-panel" id="mobilePanel">
+  <div class="close-x" id="closeX">close</div>
+  <a href="#events">Events</a>
+  <a href="#signature">Signature</a>
+  <a href="#upcoming">Upcoming</a>
+  <a href="#gallery">Gallery</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-blob b1"></div>
+    <div class="hero-blob b2"></div>
+    <div class="hero-blob b3"></div>
+    <div class="hero-content">
+      <div class="hero-orb-wrap">
+        <svg class="hero-orb" viewBox="0 0 64 64">
+          <defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#33e7d6"/><stop offset="50%" stop-color="#8b3ef0"/><stop offset="100%" stop-color="#ff3fa4"/>
+          </linearGradient></defs>
+          <circle cx="32" cy="32" r="27" fill="none" stroke="url(#lg2)" stroke-width="1.4" stroke-dasharray="120 170" stroke-linecap="round"/>
+          <circle cx="32" cy="32" r="9" fill="url(#lg2)" opacity="0.9"/>
+        </svg>
+      </div>
+      <div class="eyebrow" style="justify-content:center;">MUMBAI · BENGALURU · GOA — BY INVITATION &amp; INTENTION</div>
+      <h1 class="hero-title">Where Evenings Turn<br>Into Experiences</h1>
+      <p class="hero-sub">Shaam Circle curates the hours between daylight and night — techno floors, rooftop gatherings, and sound rituals built for people who feel a city differently after dark.</p>
+      <div class="hero-actions">
+        <a href="#events" class="btn btn-ghost">Explore Events
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="#contact" class="btn btn-primary">Book Now</a>
+      </div>
+    </div>
+    <div class="scroll-cue"><span>SCROLL</span><span class="line"></span></div>
+  </section>
+
+  <!-- ============ EVENT CATEGORIES ============ -->
+  <section class="section categories" id="events">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">WHAT WE BUILD</div>
+        <h2>Four formats. One frequency.</h2>
+        <p class="tagline">Every Shaam Circle night is designed, not scheduled — built around how a room should feel from the first hour to the last.</p>
+      </div>
+      <div class="category-grid">
+
+        <div class="category-card c1" data-reveal>
+          <div>
+            <div class="cat-index">01 / SOUND</div>
+            <svg class="cat-icon" viewBox="0 0 40 40" fill="none" stroke="var(--violet-soft)" stroke-width="1.4">
+              <circle cx="20" cy="20" r="3"/><circle cx="20" cy="20" r="10"/><circle cx="20" cy="20" r="17" stroke-dasharray="4 5"/>
+            </svg>
+            <h3>Techno &amp; Underground</h3>
+            <p>Warehouse-grade systems, low light, and a no-phones policy at the booth. The floor is the only conversation that matters.</p>
+          </div>
+          <span class="cat-tag">Enter the floor <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+
+        <div class="category-card c2" data-reveal>
+          <div>
+            <div class="cat-index">02 / SKYLINE</div>
+            <svg class="cat-icon" viewBox="0 0 40 40" fill="none" stroke="var(--pink)" stroke-width="1.4">
+              <path d="M6 28 L14 16 L20 22 L28 10 L34 28" stroke-linejoin="round"/>
+            </svg>
+            <h3>Rooftop &amp; Private Socials</h3>
+            <p>Skyline backdrops, curated guest lists, and sets that move with the sunset instead of fighting it.</p>
+          </div>
+          <span class="cat-tag">Request the list <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+
+        <div class="category-card c3" data-reveal>
+          <div>
+            <div class="cat-index">03 / RITUAL</div>
+            <svg class="cat-icon" viewBox="0 0 40 40" fill="none" stroke="var(--cyan)" stroke-width="1.4">
+              <circle cx="20" cy="20" r="14"/><path d="M20 11v18M11 20h18" stroke-dasharray="2 4"/>
+            </svg>
+            <h3>Meditation × Techno</h3>
+            <p>We open in silence and close in bass — a single sound journey engineered from stillness to euphoria.</p>
+          </div>
+          <span class="cat-tag">Feel the shift <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+
+        <div class="category-card c4" data-reveal>
+          <div>
+            <div class="cat-index">04 / EXPERIMENT</div>
+            <svg class="cat-icon" viewBox="0 0 40 40" fill="none" stroke="var(--violet-soft)" stroke-width="1.4">
+              <path d="M8 20 L20 8 L32 20 L20 32 Z"/>
+            </svg>
+            <h3>Experimental Concepts</h3>
+            <p>One-night formats that will never repeat. Built for the curious, not the comfortable.</p>
+          </div>
+          <span class="cat-tag">Ask no questions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SIGNATURE EXPERIENCE ============ -->
+  <section class="section signature" id="signature">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow violet">SIGNATURE EXPERIENCE</div>
+        <h2>Meditation Meets Techno</h2>
+        <p class="tagline">Our most personal format — a single night engineered as one continuous arc, not a playlist.</p>
+      </div>
+
+      <div class="signature-inner">
+        <div class="signature-text">
+
+          <div class="signature-block" data-phase="stillness">
+            <span class="phase-tag">PHASE 01 — STILLNESS</span>
+            <h3>It begins with nothing.</h3>
+            <p>No lights, no bass, no performance. Just a circle of people on the floor, breath finding breath, the room quieter than the city outside it.</p>
+          </div>
+
+          <div class="signature-block" data-phase="breath">
+            <span class="phase-tag">PHASE 02 — BREATH</span>
+            <h3>The first frequency arrives.</h3>
+            <p>A single low tone enters under the silence. Nobody notices when meditation ends and music begins — that's the point.</p>
+          </div>
+
+          <div class="signature-block" data-phase="pulse">
+            <span class="phase-tag">PHASE 03 — PULSE</span>
+            <h3>The room starts to move.</h3>
+            <p>The tone becomes rhythm. Eyes that were closed start to open. The same bodies that sat still an hour ago are now the floor.</p>
+          </div>
+
+          <div class="signature-block" data-phase="release">
+            <span class="phase-tag">PHASE 04 — RELEASE</span>
+            <h3>Euphoria, earned.</h3>
+            <p>Full techno, full volume, full room — but it feels different from a normal night out, because everyone arrived at it together, on purpose.</p>
+          </div>
+
+        </div>
+
+        <div class="signature-visual" data-phase="stillness">
+          <div class="orb-stage">
+            <div class="orb-ring r1"></div>
+            <div class="orb-ring r2"></div>
+            <div class="orb-core"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ UPCOMING EXPERIENCES ============ -->
+  <section class="section upcoming" id="upcoming">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow pink">UPCOMING EXPERIENCES</div>
+        <h2>Not all experiences are<br>revealed at once.</h2>
+        <p class="tagline">Four formats are currently being built. Some have dates. Some don't have names yet. None will be fully explained here.</p>
+      </div>
+
+      <div class="upcoming-grid">
+
+        <div class="upcoming-card uc1" data-reveal>
+          <div class="uc-visual v1"></div>
+          <svg class="uc-noise" viewBox="0 0 100 100"><filter id="n1"><feTurbulence baseFrequency="0.8"/></filter><rect width="100" height="100" filter="url(#n1)"/></svg>
+          <div class="uc-frame"></div>
+          <div class="uc-body">
+            <span class="status-tag soon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Coming Soon</span>
+            <h3>Project Eclipse</h3>
+            <p class="teaser">A blackout set, three DJs, one hour no one has heard yet.</p>
+          </div>
+        </div>
+
+        <div class="upcoming-card uc2" data-reveal>
+          <div class="uc-visual v2"></div>
+          <svg class="uc-noise" viewBox="0 0 100 100"><filter id="n2"><feTurbulence baseFrequency="0.8"/></filter><rect width="100" height="100" filter="url(#n2)"/></svg>
+          <div class="uc-frame"></div>
+          <div class="uc-body">
+            <span class="status-tag dev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>In Development</span>
+            <h3>Silent Frequency</h3>
+            <p class="teaser">Headphones for some. Speakers for none. You'll understand later.</p>
+          </div>
+        </div>
+
+        <div class="upcoming-card uc3" data-reveal>
+          <div class="uc-visual v3"></div>
+          <svg class="uc-noise" viewBox="0 0 100 100"><filter id="n3"><feTurbulence baseFrequency="0.8"/></filter><rect width="100" height="100" filter="url(#n3)"/></svg>
+          <div class="uc-frame"></div>
+          <div class="uc-body">
+            <span class="status-tag locked"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Locked</span>
+            <h3>The Hollow Hour</h3>
+            <p class="teaser">We can't tell you where. We can tell you when the moon is right.</p>
+          </div>
+        </div>
+
+        <div class="upcoming-card uc4" data-reveal>
+          <div class="uc-visual v4"></div>
+          <svg class="uc-noise" viewBox="0 0 100 100"><filter id="n4"><feTurbulence baseFrequency="0.8"/></filter><rect width="100" height="100" filter="url(#n4)"/></svg>
+          <div class="uc-frame"></div>
+          <div class="uc-body">
+            <span class="status-tag soon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Coming Soon</span>
+            <h3>Afterlight</h3>
+            <p class="teaser">What happens after the last train and before the first prayer call.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY ============ -->
+  <section class="section gallery" id="gallery">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <div class="eyebrow">FROM THE FLOOR</div>
+        <h2>Moments we were asked not to fully show.</h2>
+        <p class="tagline">A glimpse of the rooms, not the whole room. Full sets are for the people who were there.</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item g1" data-reveal><div class="gi-bg gb1"></div><div class="gi-shade"></div><div class="gi-caption">Underground Floor — Bengaluru</div></div>
+        <div class="gallery-item g2" data-reveal><div class="gi-bg gb2"></div><div class="gi-shade"></div><div class="gi-caption">Sound Ritual — Goa</div></div>
+        <div class="gallery-item g3" data-reveal><div class="gi-bg gb3"></div><div class="gi-shade"></div><div class="gi-caption">Rooftop Social — Mumbai</div></div>
+        <div class="gallery-item g4" data-reveal><div class="gi-bg gb4"></div><div class="gi-shade"></div><div class="gi-caption">Booth, 2AM</div></div>
+        <div class="gallery-item g5" data-reveal><div class="gi-bg gb5"></div><div class="gi-shade"></div><div class="gi-caption">Private Gathering — Delhi</div></div>
+        <div class="gallery-item g6" data-reveal><div class="gi-bg gb6"></div><div class="gi-shade"></div><div class="gi-caption">Closing Set</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="section about" id="about">
+    <div class="container about-inner">
+      <div class="eyebrow" data-reveal>OUR STORY</div>
+      <h2 data-reveal>Shaam means evening. Circle means everyone in it.</h2>
+      <p data-reveal>In Hindi, "shaam" simply means the evening — that hinge of the day when light softens and a city decides who it wants to be tonight. Shaam Circle began with a handful of friends moving two speakers onto a Bandra rooftop, inviting forty people, and watching strangers become a crowd before the second song.</p>
+      <p data-reveal>We never set out to be a party brand. We set out to protect a feeling — the one where the music, the light, and the people in the room all arrive at the same moment, together. Every event since has been built backward from that feeling, not forward from a venue or a date.</p>
+      <p class="about-quote" data-reveal>"We don't throw events. We hold a room until it becomes something you remember."</p>
+      <div class="about-stats" data-reveal>
+        <div class="about-stat"><div class="num">60+</div><div class="lbl">Nights Held</div></div>
+        <div class="about-stat"><div class="num">3</div><div class="lbl">Cities</div></div>
+        <div class="about-stat"><div class="num">12K+</div><div class="lbl">Circle Members</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="section contact" id="contact">
+    <div class="container">
+      <div class="contact-inner" data-reveal>
+        <div class="contact-left">
+          <div class="eyebrow pink">GET IN</div>
+          <h2>Request your place<br>in the circle.</h2>
+          <p>Most Shaam Circle nights are not publicly ticketed. Reach out and we'll let you know what's open, what's filling up, and what isn't ready to be named yet.</p>
+          <ul class="contact-list">
+            <li>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5c0 9 7 16 16 16l3-5-6-2-2 2c-3-1-5-3-6-6l2-2-2-6z"/></svg></span>
+              <div><span class="sub">Call / WhatsApp</span><a href="tel:+919876543210">+91 98765 43210</a></div>
+            </li>
+            <li>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+              <div><span class="sub">Email</span><a href="mailto:hello@shaamcircle.in">hello@shaamcircle.in</a></div>
+            </li>
+            <li>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></span>
+              <div><span class="sub">Instagram</span><a href="https://instagram.com/shaamcircle" target="_blank" rel="noopener">@shaamcircle</a></div>
+            </li>
+          </ul>
+        </div>
+        <div class="contact-right">
+          <div class="eyebrow">BOOKINGS &amp; PRIVATE EVENTS</div>
+          <h3>Planning a rooftop, a private night, or something that doesn't have a category yet?</h3>
+          <p>Tell us the vibe, the city, and the headcount — we'll come back with a format, not a template.</p>
+          <a href="mailto:hello@shaamcircle.in?subject=Booking%20Enquiry%20—%20Shaam%20Circle" class="btn btn-primary">Book Now</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="logo">
+        <svg class="logo-mark" viewBox="0 0 40 40">
+          <circle cx="20" cy="20" r="17" fill="none" stroke="url(#lg1)" stroke-width="2" stroke-dasharray="78 100" stroke-linecap="round" transform="rotate(-90 20 20)"/>
+          <circle cx="20" cy="20" r="6" fill="url(#lg1)" opacity="0.85"/>
+        </svg>
+        <span class="logo-text">SHAAM<span>CIRCLE</span></span>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Explore</h4>
+          <ul>
+            <li><a href="#events">Events</a></li>
+            <li><a href="#signature">Signature</a></li>
+            <li><a href="#upcoming">Upcoming</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Circle</h4>
+          <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="https://instagram.com/shaamcircle" target="_blank" rel="noopener">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 SHAAM CIRCLE — MUMBAI · BENGALURU · GOA</p>
+      <p>THE CIRCLE CONTINUES AFTER DARK</p>
+    </div>
+  </div>
+</footer>
+
+<a href="#contact" class="float-book btn btn-primary" id="floatBook">Book Now</a>
+
+<script>
+  // Header scroll state
+  const header = document.getElementById('siteHeader');
+  const floatBook = document.getElementById('floatBook');
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    header.classList.toggle('scrolled', y > 40);
+    floatBook.classList.toggle('show', y > window.innerHeight * 0.9);
+  });
+
+  // Mobile nav
+  const navToggle = document.getElementById('navToggle');
+  const mobilePanel = document.getElementById('mobilePanel');
+  const closeX = document.getElementById('closeX');
+  navToggle.addEventListener('click', () => mobilePanel.classList.add('open'));
+  closeX.addEventListener('click', () => mobilePanel.classList.remove('open'));
+  mobilePanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobilePanel.classList.remove('open')));
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('[data-reveal]');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in-view');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach((el, i) => {
+    el.style.transitionDelay = (i % 4) * 70 + 'ms';
+    revealObserver.observe(el);
+  });
+
+  // Signature scroll-linked phases
+  const sigBlocks = document.querySelectorAll('.signature-block');
+  const sigVisual = document.querySelector('.signature-visual');
+  const sigObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        sigBlocks.forEach(b => b.classList.remove('active'));
+        entry.target.classList.add('active');
+        if (sigVisual) sigVisual.setAttribute('data-phase', entry.target.getAttribute('data-phase'));
+      }
+    });
+  }, { threshold: 0.55, rootMargin: '-10% 0px -10% 0px' });
+  sigBlocks.forEach(b => sigObserver.observe(b));
+</script>
+
+</body>
+</html>
